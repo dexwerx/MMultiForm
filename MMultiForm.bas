@@ -13,6 +13,9 @@ Attribute VB_Name = "MMultiForm"
 Option Compare Database
 Option Explicit
 
+Const CASCADEX As Long = 400    'offset in twips
+Const CASCADEY As Long = 400
+
 Private MultiForms As New Collection
 
 Function OpenFormMulti(NewForm As Form, Optional Filter As String = "", Optional Cascade As Boolean = True)
@@ -31,9 +34,9 @@ Function OpenFormMulti(NewForm As Form, Optional Filter As String = "", Optional
     End With
     
     If Cascade And MultiForms.Count > 1 Then
-        Dim LastForm As Form
-        Set LastForm = MultiForms(MultiForms.Count - 1)
-        If LastForm Is Nothing Then Else NewForm.Move LastForm.WindowLeft + 400, LastForm.WindowTop + 400
+        With MultiForms(MultiForms.Count - 1)
+            NewForm.Move .WindowLeft + CASCADEX, .WindowTop + CASCADEY
+        End With
     End If
 End Function
 
@@ -52,18 +55,16 @@ Function CloseFormMulti(CloseForm As Form) As Boolean
     Next
 End Function
 
-Function CloseAllFormMulti(Optional CloseFormType As Object = Nothing)
+Function CloseAllFormMulti(Optional CloseFormType As String)
     Dim CurForm As Object
     
     For Each CurForm In MultiForms
-        If CloseFormType Is Nothing Then
+        If Len(CloseFormType) = 0 Then
             MultiForms.Remove CStr(CurForm.hWnd)
             Set CurForm = Nothing
-        ElseIf TypeName(CurForm) = TypeName(CloseFormType) Then
+        ElseIf TypeName(CurForm) = CloseFormType Then
             MultiForms.Remove CStr(CurForm.hWnd)
             Set CurForm = Nothing
         End If
     Next
-    
-    Set CloseFormType = Nothing
 End Function
