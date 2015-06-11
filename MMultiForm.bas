@@ -1,5 +1,5 @@
 Attribute VB_Name = "MMultiForm"
-' Copyright © 2014 Dexter Freivald. All Rights Reserved. DEXWERX.COM
+' Copyright © 2015 Dexter Freivald. All Rights Reserved. DEXWERX.COM
 '
 ' MMultiForm.bas
 '
@@ -18,7 +18,7 @@ Const CASCADEY As Long = 400
 
 Private MultiForms As New Collection
 
-Function OpenFormMulti(NewForm As Form, Optional Filter As String = "", Optional Cascade As Boolean = True)
+Function OpenFormMulti(NewForm As Form, Optional Filter As String = "", Optional Cascade As Boolean = True) As Form
     MultiForms.Add NewForm, CStr(NewForm.hWnd)
 
     With NewForm
@@ -38,6 +38,8 @@ Function OpenFormMulti(NewForm As Form, Optional Filter As String = "", Optional
             NewForm.Move .WindowLeft + CASCADEX, .WindowTop + CASCADEY
         End With
     End If
+    
+    OpenFormMulti = NewForm
 End Function
 
 Function CloseFormMulti(CloseForm As Form) As Boolean
