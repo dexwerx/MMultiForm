@@ -55,14 +55,14 @@ Function CloseFormMulti(CloseForm As Form) As Boolean
     Next
 End Function
 
-Function CloseAllFormMulti(Optional CloseFormType As String)
+Function CloseAllFormMulti(Optional FormTypeName As String)
     Dim CurForm As Object
     
     For Each CurForm In MultiForms
-        If Len(CloseFormType) = 0 Then
+        If Len(FormTypeName) = 0 Then
             MultiForms.Remove CStr(CurForm.hWnd)
             Set CurForm = Nothing
-        ElseIf TypeName(CurForm) = CloseFormType Then
+        ElseIf TypeName(CurForm) = FormTypeName Then
             MultiForms.Remove CStr(CurForm.hWnd)
             Set CurForm = Nothing
         End If
