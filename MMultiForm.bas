@@ -3,7 +3,7 @@ Attribute VB_Name = "MMultiForm"
 '
 ' MMultiForm.bas
 '
-' Implements multiple duplicate forms in MS Access
+' Implements multiple duplicate forms for MS Access
 '   - adapted from http://allenbrowne.com/ser-35.html
 '   - Instatiate new form using 'OpenFormMulti New Form_frmEditRecord, "ID=" & ID'
 '   - Call 'CloseFormMulti Me' from Form_Close() event, or you will get weird bugs...
@@ -13,12 +13,18 @@ Attribute VB_Name = "MMultiForm"
 Option Compare Database
 Option Explicit
 
+Declare Function IsZoomed Lib "user32" (ByVal hWnd As Long) As Long
+Declare Function IsIconic Lib "user32" (ByVal hWnd As Long) As Long
+
 Const CASCADEX As Long = 400    'offset in twips
 Const CASCADEY As Long = 400
 
 Private MultiForms As New Collection
 
-Function OpenFormMulti(NewForm As Form, Optional Filter As String = "", Optional Cascade As Boolean = True) As Form
+Function OpenFormMulti(NewForm As Form, _
+                       Optional Filter As String = "", _
+                       Optional Cascade As Boolean = True, _
+                       Optional Caption As String) As Form
     MultiForms.Add NewForm, CStr(NewForm.hWnd)
 
     With NewForm
@@ -28,18 +34,18 @@ Function OpenFormMulti(NewForm As Form, Optional Filter As String = "", Optional
             .Filter = Filter
             .FilterOn = True
         End If
-        .Caption = .Caption
+        If LenB(Caption) Then .Caption = Caption
         .Visible = True
         .SetFocus
     End With
     
-    If Cascade And MultiForms.Count > 1 Then
+    If Cascade And MultiForms.Count > 1 And IsZoomed(NewForm.hWnd) = 0 And IsIconic(NewForm.hWnd) = 0 Then
         With MultiForms(MultiForms.Count - 1)
             NewForm.Move .WindowLeft + CASCADEX, .WindowTop + CASCADEY
         End With
     End If
     
-    OpenFormMulti = NewForm
+    Set OpenFormMulti = NewForm
 End Function
 
 Function CloseFormMulti(CloseForm As Form) As Boolean
